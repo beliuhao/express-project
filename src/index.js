@@ -31,9 +31,21 @@ let messages = {
   }
 };
 
+// third-party Express middleware
 app.use(cors());
+
+// built-in Express middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+// custom Express middleware
+app.use((req, res, next) => {
+  // do something
+  // In between of the middleware function you could do anything now
+  // eg, get authenticated user, then use it in the messages post route
+  req.me = users[1];
+  next();
+});
 
 // curl http://localhost:3000/users
 app.get('/users', (req, res) => {
@@ -55,6 +67,10 @@ app.delete('/users/:userId', (req, res) => {
   return res.send(`DELETE HTTP method on user/${req.params.userId} resource`);
 });
 
+// curl http://localhost:3000/messages
+app.get('/messages', (req, res) => {
+  return res.send(messages);
+});
 // curl http://localhost:3000/messages/xxx
 app.get('/messages/:msgId', (req, res) => {
   return res.send(messages[req.params.msgId]);
@@ -64,9 +80,16 @@ app.post('/messages', (req, res) => {
   const id = uuidv4();
   const message = {
     id,
-    text: req.body.text
+    text: req.body.text,
+    userId: req.me.id
   };
   messages[id] = message;
+  return res.send(message);
+});
+// curl -X DELETE http://localhost:3000/messages/1
+app.delete('/messages/:messageId', (req, res) => {
+  const { [req.params.messageId]: message, ...otherMessages } = messages;
+  messages = otherMessages;
   return res.send(message);
 });
 
