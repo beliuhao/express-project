@@ -86,6 +86,21 @@ app.post('/messages', (req, res) => {
   messages[id] = message;
   return res.send(message);
 });
+// curl -X PUT -H "Content-Type:application/json" http://localhost:3000/messages/1 -d '{"text":"Hi, Herman"}'
+app.put('/messages/:messageId', (req, res) => {
+  const { [req.params.messageId]: message, ...otherMessages } = messages;
+  const newMessage = {
+    id: req.params.messageId,
+    text: req.body.text,
+    userId: req.me.id
+  };
+  if (message) {
+    messages[req.params.messageId] = newMessage;
+    return res.send(messages);
+  } else {
+    return res.send('Invalid msgId!!!');
+  }
+});
 // curl -X DELETE http://localhost:3000/messages/1
 app.delete('/messages/:messageId', (req, res) => {
   const { [req.params.messageId]: message, ...otherMessages } = messages;
