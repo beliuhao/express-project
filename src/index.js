@@ -32,6 +32,8 @@ let messages = {
 };
 
 app.use(cors());
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 // curl http://localhost:3000/users
 app.get('/users', (req, res) => {
@@ -40,23 +42,29 @@ app.get('/users', (req, res) => {
 app.get('/users/:userId', (req, res) => {
   return res.send(users[req.params.userId]);
 });
-// curl - X POST http://localhost:3000/users
+// curl -X POST http://localhost:3000/users
 app.post('/users', (req, res) => {
   return res.send('POST HTTP method on user resource');
 });
-// curl - X PUT http://localhost:3000/users/1
+// curl -X PUT http://localhost:3000/users/1
 app.put('/users/:userId', (req, res) => {
   return res.send(`PUT HTTP method on user/${req.params.userId} resource`);
 });
-// curl - X DELETE http://localhost:3000/users/1
+// curl -X DELETE http://localhost:3000/users/1
 app.delete('/users/:userId', (req, res) => {
   return res.send(`DELETE HTTP method on user/${req.params.userId} resource`);
 });
-// curl - X POST http://localhost:3000/messages
+
+// curl http://localhost:3000/messages/xxx
+app.get('/messages/:msgId', (req, res) => {
+  return res.send(messages[req.params.msgId]);
+});
+// curl -X POST -H "Content-Type:application/json" http://localhost:3000/messages -d '{"text":"Hi again, World"}'
 app.post('/messages', (req, res) => {
   const id = uuidv4();
   const message = {
-    id
+    id,
+    text: req.body.text
   };
   messages[id] = message;
   return res.send(message);
