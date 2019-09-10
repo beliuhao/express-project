@@ -92,5 +92,9 @@ app.delete('/messages/:messageId', (req, res) => {
   messages = otherMessages;
   return res.send(message);
 });
+// get authenticated user
+app.get('/session', (req, res) => {
+  return res.send(users[req.me.id]);
+});
 
 app.listen(process.env.PORT, () => console.log(`Example app listening on port ${process.env.PORT}!`));
